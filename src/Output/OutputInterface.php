@@ -9,16 +9,13 @@ use Asynit\Test;
  */
 interface OutputInterface
 {
-    public function outputStep(Test $test, $debugOutput);
-
     /**
-     * @param Test                  $test
-     * @param string                $debugOutput
-     * @param \Throwable|\Exception $failure
+     * Update output as a test has been updated
+     *
+     * @param Test   $test
+     * @param string $debugOutput
      *
      * @return mixed
      */
-    public function outputFailure(Test $test, $debugOutput, $failure);
-
-    public function outputSuccess(Test $test, $debugOutput);
+    public function update(Test $test, $debugOutput);
 }

@@ -11,28 +11,13 @@ class Simple implements OutputInterface
 
     public function __construct()
     {
-        $this->formatter = new Formatter();
+        $this->formatter = new ColorFormatter();
     }
 
-    public function outputStep(Test $test, $debugOutput)
+    public function update(Test $test, $debugOutput)
     {
-        $this->outputMessage($test, $this->formatter->formatStepTest($test), $debugOutput, true);
-    }
-
-    public function outputFailure(Test $test, $debugOutput, $failure)
-    {
-        $this->outputMessage($test, $this->formatter->formatFailedTest($test, $failure), $debugOutput);
-    }
-
-    public function outputSuccess(Test $test, $debugOutput)
-    {
-        $this->outputMessage($test, $this->formatter->formatSuccessTest($test), $debugOutput);
-    }
-
-    protected function outputMessage(Test $test, $message, $debugOutput, $temp = false)
-    {
-        if (!$temp) {
-            fwrite(STDOUT, $message);
+        if ($test->getStatus() !== Test::STATUS_PENDING) {
+            fwrite(STDOUT, $this->formatter->format($test));
             fwrite(STDOUT, $debugOutput);
         }
     }

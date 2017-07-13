@@ -180,16 +180,10 @@ class PoolRunner
 
             $this->futureHttpPool->flush();
             $pool->passFinishTest($test);
-            $this->output->outputFailure($test, $debugOutput, $exception);
+            $test->setStatus(Test::STATUS_FAILURE);
+            $test->setFailure($exception);
 
-            return false;
-        } catch (\Exception $exception) {
-            $debugOutput = ob_get_contents();
-            ob_clean();
-
-            $this->futureHttpPool->flush();
-            $pool->passFinishTest($test);
-            $this->output->outputFailure($test, $debugOutput, $exception);
+            $this->output->update($test, $debugOutput);
 
             return false;
         }
@@ -205,7 +199,8 @@ class PoolRunner
 
         if ($pool->hasTest($test) && $test->getFutureHttpPool()->isEmpty()) {
             $pool->passFinishTest($test);
-            $this->output->outputSuccess($test, $debugOutput);
+            $test->setStatus(Test::STATUS_SUCCESS);
+            $this->output->update($test, $debugOutput);
 
             foreach ($test->getChildren() as $childTest) {
                 $complete = true;
@@ -226,7 +221,8 @@ class PoolRunner
         }
 
         if ($pool->hasTest($test)) {
-            $this->output->outputStep($test, $debugOutput);
+            $test->setStatus(Test::STATUS_PENDING);
+            $this->output->update($test, $debugOutput);
         }
 
         return true;

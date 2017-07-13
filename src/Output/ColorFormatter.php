@@ -7,8 +7,17 @@ namespace Asynit\Output;
 use Asynit\Test;
 use Symfony\Component\Console\Formatter\OutputFormatterStyle;
 
-class Formatter
+class ColorFormatter implements FormatterInterface
 {
+    /** @var OutputFormatterStyle  */
+    private $outputFormatFail;
+
+    /** @var OutputFormatterStyle  */
+    private $outputFormatPending;
+
+    /** @var OutputFormatterStyle  */
+    private $outputFormatSuccess;
+
     public function __construct()
     {
         $this->outputFormatFail = new OutputFormatterStyle('white', 'red', ['bold']);
@@ -16,7 +25,24 @@ class Formatter
         $this->outputFormatSuccess = new OutputFormatterStyle('black', 'green', ['bold']);
     }
 
-    public function formatStepTest(Test $test)
+    public function format(Test $test) : string
+    {
+        if ($test->getStatus() === Test::STATUS_PENDING) {
+            return $this->formatStepTest($test);
+        }
+
+        if ($test->getStatus() === Test::STATUS_SUCCESS) {
+            return $this->formatSuccessTest($test);
+        }
+
+        if ($test->getStatus() === Test::STATUS_FAILURE) {
+            return $this->formatFailedTest($test);
+        }
+
+        return '';
+    }
+
+    private function formatStepTest(Test $test) : string
     {
         return sprintf(
             "%s %s%s\n",
@@ -26,18 +52,18 @@ class Formatter
         );
     }
 
-    public function formatFailedTest(Test $test, \Throwable $failure)
+    private function formatFailedTest(Test $test) : string
     {
         return sprintf(
             "%s %s\n\t\u{2715} %s%s\n",
             $this->outputFormatFail->apply('Failure'),
             $test->getIdentifier(),
-            $failure->getMessage(),
+            $test->getFailure()->getMessage(),
             $this->createAssertionMessage($test)
         );
     }
 
-    public function formatSuccessTest(Test $test)
+    private function formatSuccessTest(Test $test) : string
     {
         return sprintf(
             "%s %s%s\n",
@@ -47,7 +73,7 @@ class Formatter
         );
     }
 
-    private function createAssertionMessage(Test $test)
+    private function createAssertionMessage(Test $test) : string
     {
         $text = "";
 

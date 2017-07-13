@@ -6,10 +6,9 @@ use Asynit\Test;
 use MKraemer\ReactPCNTL\PCNTL;
 use React\EventLoop\LoopInterface;
 
-class Tty extends Simple
+class Tty implements OutputInterface
 {
-    /** @var LoopInterface  */
-    private $loop;
+    private $formatter;
 
     /** @var int */
     private $rows = 30;
@@ -22,9 +21,7 @@ class Tty extends Simple
 
     public function __construct(LoopInterface $loop)
     {
-        parent::__construct();
-
-        $this->loop = $loop;
+        $this->formatter = new ColorFormatter();
         $this->setTerminalSize();
 
         if (function_exists('pcntl_signal')) {
@@ -52,7 +49,7 @@ class Tty extends Simple
         $this->columns = $matches[2];
     }
 
-    protected function outputMessage(Test $test, $message, $debugMessage, $temp = false)
+    public function update(Test $test, $debugOutput)
     {
         if (!array_key_exists($test->getIdentifier(), $this->testOutputs)) {
             $this->testOutputs[$test->getIdentifier()] = new TestOutput(count($this->testOutputs));
@@ -60,8 +57,8 @@ class Tty extends Simple
 
         /** @var TestOutput $testOutput */
         $testOutput = $this->testOutputs[$test->getIdentifier()];
-        $testOutput->addDebugOutput($debugMessage);
-        $testOutput->setMessage($message);
+        $testOutput->addDebugOutput($debugOutput);
+        $testOutput->setMessage($this->formatter->format($test));
 
         // Calculate size to go up
         $upSize = 0;

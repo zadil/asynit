@@ -24,30 +24,10 @@ class Chain implements OutputInterface
     /**
      * {@inheritdoc}
      */
-    public function outputStep(Test $test, $debugOutput)
+    public function update(Test $test, $debugOutput)
     {
         foreach ($this->outputs as $output) {
-            $output->outputStep($test, $debugOutput);
-        }
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function outputFailure(Test $test, $debugOutput, $failure)
-    {
-        foreach ($this->outputs as $output) {
-            $output->outputFailure($test, $debugOutput, $failure);
-        }
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function outputSuccess(Test $test, $debugOutput)
-    {
-        foreach ($this->outputs as $output) {
-            $output->outputSuccess($test, $debugOutput);
+            $output->update($test, $debugOutput);
         }
     }
 }

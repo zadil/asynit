@@ -11,6 +11,13 @@ use Http\Client\HttpAsyncClient;
  */
 class Test
 {
+    const STATUS_CREATED = 'Created';
+    const STATUS_PENDING = 'Pending';
+    const STATUS_SUCCESS = 'Success';
+    const STATUS_FAILURE = 'Failure';
+    const STATUS_SKIPPED = 'Skipped';
+    const STATUS_INCOMPLETE = 'Incomplete';
+
     /** @var Test[] */
     private $parents = [];
 
@@ -29,6 +36,12 @@ class Test
     /** @var HttpAsyncClient */
     private $httpClient;
 
+    /** @var string */
+    private $status;
+
+    /** @var \Throwable */
+    private $failure;
+
     private $assertions = [];
 
     private $identifier;
@@ -38,6 +51,7 @@ class Test
         $this->method = $reflectionMethod;
         $this->arguments = [];
         $this->futureHttpPool = new FutureHttpPool();
+        $this->status = self::STATUS_CREATED;
         $this->identifier = $identifier ?: sprintf(
             '%s::%s',
             $this->method->getDeclaringClass()->getName(),
@@ -163,5 +177,37 @@ class Test
     public function setHttpClient($httpClient)
     {
         $this->httpClient = $httpClient;
+    }
+
+    /**
+     * @return string
+     */
+    public function getStatus()
+    {
+        return $this->status;
+    }
+
+    /**
+     * @param string $status
+     */
+    public function setStatus($status)
+    {
+        $this->status = $status;
+    }
+
+    /**
+     * @return \Throwable
+     */
+    public function getFailure()
+    {
+        return $this->failure;
+    }
+
+    /**
+     * @param \Throwable $failure
+     */
+    public function setFailure($failure)
+    {
+        $this->failure = $failure;
     }
 }

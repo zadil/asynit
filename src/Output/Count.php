@@ -14,30 +14,21 @@ class Count implements OutputInterface
     /**
      * {@inheritdoc}
      */
-    public function outputStep(Test $test, $debugOutput)
+    public function update(Test $test, $debugOutput)
     {
-    }
+        if ($test->getStatus() === Test::STATUS_SUCCESS) {
+            $this->succeed++;
+        }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function outputFailure(Test $test, $debugOutput, $failure)
-    {
-        $this->failed++;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function outputSuccess(Test $test, $debugOutput)
-    {
-        $this->succeed++;
+        if ($test->getStatus() === Test::STATUS_FAILURE) {
+            $this->failed++;
+        }
     }
 
     /**
      * @return int
      */
-    public function getSucceed()
+    public function getSucceed() : int
     {
         return $this->succeed;
     }
@@ -45,7 +36,7 @@ class Count implements OutputInterface
     /**
      * @return int
      */
-    public function getFailed()
+    public function getFailed() : int
     {
         return $this->failed;
     }

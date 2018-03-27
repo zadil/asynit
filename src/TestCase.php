@@ -4,6 +4,7 @@ namespace Asynit;
 
 use Amp\Artax\DefaultClient;
 use function Amp\call;
+use Amp\Socket\ClientTlsContext;
 use Amp\Sync\Lock;
 use Amp\Sync\Semaphore;
 use Amp\Promise;
@@ -51,7 +52,10 @@ class TestCase
     {
         return call(function () {
             $this->client = yield call(function () {
-                return $this->setUp(new ArtaxAsyncAdapter($this->messageFactory, new DefaultClient()));
+                $tlsContext = new ClientTlsContext();
+                $tlsContext = $tlsContext->withoutPeerVerification();
+
+                return $this->setUp(new ArtaxAsyncAdapter($this->messageFactory, new DefaultClient(null, null, $tlsContext)));
             });
         });
     }
